@@ -1,0 +1,10 @@
+# Persistent Windows disk (can be 100GB+)
+windows/
+steam-data/
+
+# Shared user data (optional to ignore or not)
+# shared/
+
+# Docker / compose noise
+*.log
+.env

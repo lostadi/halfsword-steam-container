@@ -1,0 +1,55 @@
+services:
+  windows:
+    image: dockurr/windows
+    container_name: halfsword-windows
+    environment:
+      # Windows 11 Pro is a good balance. Change to "10" for Windows 10 if preferred.
+      VERSION: "11"
+      # Allocate more resources for gaming. Adjust based on your host.
+      RAM_SIZE: "8G"
+      CPU_CORES: "4"
+      DISK_SIZE: "128G"
+      # Username/password for the Windows install (RDP + initial login)
+      USERNAME: "Docker"
+      PASSWORD: "admin"
+      # Optional: Set language if not English
+      # LANGUAGE: "English"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      # Web viewer (noVNC) - good for initial setup and watching install
+      - "8006:8006"
+      # RDP for better experience (use Microsoft Remote Desktop app)
+      - "3389:3389/tcp"
+      - "3389:3389/udp"
+      # Optional: If you later install Parsec or Sunshine inside Windows for low-latency gaming stream
+      # Parsec default: 8000-8010 or so
+      # Sunshine/Moonlight: 47989-48010 etc. Add as needed.
+    volumes:
+      # Persistent Windows disk / state
+      - ./windows:/storage
+      # Shared folder - will appear as "Shared" on the Windows desktop
+      - ./shared:/shared
+      # Post-install automation (install.bat runs at the end of Windows setup)
+      - ./oem:/oem
+    restart: unless-stopped
+    stop_grace_period: 2m
+    # For advanced GPU passthrough or USB, see dockur docs and add devices/ARGUMENTS here.
+
+# Example for a second container (e.g. for dedicated streaming setup) - commented out
+#  steam-headless:
+#    image: ghcr.io/steam-headless/steam-headless:latest
+#    platform: linux/amd64
+#    shm_size: 2g
+#    # See separate compose or https://github.com/Steam-Headless/docker-steam-headless
+#    # Much better for Proton gaming if you have a Linux host with GPU.
+#    # Note: published images are amd64 only; on arm64 hosts (macOS) this emulates.
+#    # Add these (and the rest of the env from the .steam-headless.yml) for the web UI to actually start:
+#    #   MODE=primary
+#    #   WEB_UI_MODE=vnc
+#    #   PORT_NOVNC_WEB=8080
+#    #   FORCE_X11_DUMMY_CONFIG=true
+#    #   DISPLAY=:55

@@ -1,0 +1,81 @@
+# Steam Headless - Linux container with Steam + Proton + Sunshine streaming.
+# For local play on Mac: runs Linux + Steam + Proton for Half Sword (good Proton support).
+# On macOS Docker Desktop, direct 3D/GPU performance is limited (use UTM Linux VM for better results).
+# You can play inside the container's desktop (http://localhost:8080) or stream via Sunshine + Moonlight client on your Mac.
+#
+# Half Sword is reported as playable on Proton (check current ProtonDB for best version).
+#
+# Usage:
+#   bash start-steam-linux.sh
+#   or
+#   docker compose -f docker-compose.steam-headless.yml up -d
+#
+# Then:
+# - Web UI / noVNC usually on port 8080.
+# - Pair Sunshine with Moonlight client (macOS has excellent Moonlight app) for streaming the game to your host Mac.
+#
+# See full docs: https://github.com/Steam-Headless/docker-steam-headless
+
+services:
+  steam-headless:
+    image: ghcr.io/steam-headless/steam-headless:latest
+    # Force amd64 because the published images are linux/amd64 only (no arm64).
+    # On Apple Silicon macOS this will run under Rosetta emulation inside Docker (slow for 3D/games).
+    # See UTM-LINUX-PROTON.md for native-arm Linux VM + box64/steam + Proton (better for this use case).
+    platform: linux/amd64
+    shm_size: 2g
+    container_name: halfsword-steam-headless
+    environment:
+      # User / group ids on host (match your user so permissions on game library are sane)
+      - PUID=501
+      - PGID=20
+      # Timezone
+      - TZ=Etc/UTC
+      # Steam
+      - STEAM_USER=          # Optional: your Steam username (or leave blank and login via web UI)
+      - STEAM_PASS=          # Optional: password (better to login interactively first time)
+      # Enable Sunshine for Moonlight streaming (highly recommended)
+      - ENABLE_SUNSHINE=true
+      - SUNSHINE_USER=steam
+      - SUNSHINE_PASS=halfsword123   # CHANGE THIS to something secure!
+      # Required to actually start Xorg + desktop + the noVNC web UI on the mapped port.
+      # Without these, supervisord starts but the web frontend (and often X) never autostart -> "not reachable".
+      - MODE=primary
+      - WEB_UI_MODE=vnc
+      - PORT_NOVNC_WEB=8080
+      - ENABLE_VNC_AUDIO=true
+      - FORCE_X11_DUMMY_CONFIG=true   # no physical monitor/GPU on Docker Desktop macOS
+      - DISPLAY=:55
+      # Override image defaults so the NVIDIA-specific flatpak mount (which fails with "permission denied" in Docker)
+      # is skipped. Otherwise set -e aborts entrypoint before supervisord + noVNC/X ever start.
+      - NVIDIA_VISIBLE_DEVICES=
+      - NVIDIA_DRIVER_CAPABILITIES=
+      # Optional: Start Steam in Big Picture / silent etc.
+      # - ENABLE_STEAM=true
+      # - STEAM_ARGS=-silent
+      # NVIDIA / GPU (uncomment and adjust if using NVIDIA container toolkit)
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - NVIDIA_DRIVER_CAPABILITIES=all
+    ports:
+      # noVNC / web desktop (common default around 8080, confirm in logs)
+      - "8080:8080"
+      # Sunshine ports (Moonlight discovery + streaming)
+      - "47989:47989/tcp"
+      - "47989:47989/udp"
+      - "48010:48010/tcp"
+      - "48010:48010/udp"
+      # Add more as needed (see project README)
+    volumes:
+      # Persistent home for the container's runtime user (default user created by image uses /home/default).
+      # Steam installs, Proton prefixes, etc. will live here (bind-mounted so they survive container restarts).
+      - ./steam-data:/home/default
+      # Optional shared media/games folder (you can add this as a Steam library path inside the container too)
+      - ./shared:/mnt/shared
+    devices:
+      # GPU access - add more specific devices for your card
+      - /dev/dri:/dev/dri
+      # For NVIDIA you usually also need the NVIDIA Container Toolkit configured on the host
+    # runtime: nvidia   # Uncomment if using NVIDIA runtime
+    restart: unless-stopped
+    # You may need privileged: true or specific caps for certain input / audio setups.
+    # See the project for recommended settings per GPU vendor.
