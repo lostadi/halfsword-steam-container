@@ -1,26 +1,11 @@
-# Half Sword - Local Free & Open Source on M1 Max (64GB)
+# Half Sword · host experiments
 
-**No cloud. No paid software. Purely local, free, open source.**
+I keep these recipes as a record of attempts to run a Windows game through local Linux/container/VM environments on Apple Silicon.
 
-Half Sword is a Windows game but runs well via Proton on Linux. Best free local way on Apple Silicon:
+The repository contains host setup and launch scripts for different approaches. A script that starts a Linux container or VM does not establish working game rendering, compatible graphics acceleration, or acceptable performance. Earlier optimistic performance language should be treated as an unverified aim.
 
-## Recommended: UTM + Linux VM + Proton
+Read the selected recipe before running it: host setup can install software, create shared directories, download images, or start services. The approaches have different requirements, and a container is not a substitute for a graphics-capable virtual machine.
 
-- UTM: free open source VM app for Mac
-- Run Linux (Ubuntu/Debian) VM
-- Steam + Proton inside the VM
-- Play Half Sword (Proton handles the Windows bits)
+A tracked startup-token file is present in the tree inventory. Its contents were not retrieved for this documentation review. Inspect and remove sensitive state before any source release.
 
-This gives good performance without the overhead of full Windows emulation.
-
-See `UTM-LINUX-PROTON.md` for the full guide.
-
-Quick commands:
-- `bash setup-parallels-env.sh` — current menu + status
-- `bash start-steam-linux.sh` — launch the Docker Linux+Steam container alternative
-
-Shared folder `~/HalfSword-Shared` is prepared for easy file transfer.
-
-Other files in this dir cover the Windows emulation attempts (Docker/UTM) if you want a full Windows desktop (expect worse gaming perf).
-
-All tools and guides here are free/open source.
+This remains a private experiment archive. The review did not start Steam, a container, a VM, or the game, and it did not benchmark macOS gaming performance. Existing game and third-party software ownership is unchanged.
