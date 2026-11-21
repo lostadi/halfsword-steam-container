@@ -8,3 +8,7 @@ steam-data/
 # Docker / compose noise
 *.log
 .env
+.env.*
+!.env.example
+startup-token
+docker-compose.steam-headless.yml.bak

@@ -36,8 +36,8 @@ services:
       - STEAM_PASS=          # Optional: password (better to login interactively first time)
       # Enable Sunshine for Moonlight streaming (highly recommended)
       - ENABLE_SUNSHINE=true
-      - SUNSHINE_USER=steam
-      - SUNSHINE_PASS=halfsword123   # CHANGE THIS to something secure!
+      - SUNSHINE_USER=${SUNSHINE_USER:?Set SUNSHINE_USER in .env}
+      - SUNSHINE_PASS=${SUNSHINE_PASS:?Set SUNSHINE_PASS in .env}
       # Required to actually start Xorg + desktop + the noVNC web UI on the mapped port.
       # Without these, supervisord starts but the web frontend (and often X) never autostart -> "not reachable".
       - MODE=primary
@@ -58,12 +58,12 @@ services:
       # - NVIDIA_DRIVER_CAPABILITIES=all
     ports:
       # noVNC / web desktop (common default around 8080, confirm in logs)
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
       # Sunshine ports (Moonlight discovery + streaming)
-      - "47989:47989/tcp"
-      - "47989:47989/udp"
-      - "48010:48010/tcp"
-      - "48010:48010/udp"
+      - "${SUNSHINE_BIND_IP:-127.0.0.1}:47989:47989/tcp"
+      - "${SUNSHINE_BIND_IP:-127.0.0.1}:47989:47989/udp"
+      - "${SUNSHINE_BIND_IP:-127.0.0.1}:48010:48010/tcp"
+      - "${SUNSHINE_BIND_IP:-127.0.0.1}:48010:48010/udp"
       # Add more as needed (see project README)
     volumes:
       # Persistent home for the container's runtime user (default user created by image uses /home/default).

@@ -17,16 +17,16 @@ services:
       CPU_CORES: "6"
       DISK_SIZE: "120G"
       USERNAME: "Docker"
-      PASSWORD: "admin"
+      PASSWORD: "${HALFSWORD_WINDOWS_PASSWORD:?Set HALFSWORD_WINDOWS_PASSWORD in .env}"
       KVM: "N"                # THE KEY: disable KVM acceleration (required on macOS)
       # You can also try BOOT_MODE if needed, but default is usually fine
     # Do NOT include /dev/kvm device on macOS
     cap_add:
       - NET_ADMIN
     ports:
-      - "8006:8006"
-      - "3389:3389/tcp"
-      - "3389:3389/udp"
+      - "127.0.0.1:8006:8006"
+      - "127.0.0.1:3389:3389/tcp"
+      - "127.0.0.1:3389:3389/udp"
     volumes:
       - ./windows-macos:/storage   # Separate folder so it doesn't conflict with normal one
       - ./shared:/shared
