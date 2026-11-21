@@ -31,7 +31,7 @@ echo "Starting with $COMPOSE_FILE ..."
 docker compose -f "$COMPOSE_FILE" up -d
 
 echo
-echo "Done. Open http://localhost:8006 (or the host IP) in your browser to watch the Windows install."
-echo "After it's ready, use RDP (port 3389) with user 'Docker' / pass 'admin' for daily access."
+echo "Done. Open http://localhost:8006 in your browser to watch the Windows install."
+echo "After it's ready, use RDP on localhost:3389 with user 'Docker' and the password you set in .env."
 echo
 echo "See README.md for full instructions, macOS alternatives (GeForce NOW is the quickest), and how to stream the game back to your Mac with low latency (Parsec or Sunshine+Moonlight)."

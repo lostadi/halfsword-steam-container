@@ -85,7 +85,7 @@ On this Mac it can boot but will be **painfully slow**.
 
 1. Copy this entire `halfsword-steam-container` folder to the Linux machine (scp, rsync, USB, etc.).
 
-2. On the Linux machine:
+2. On the Linux machine, copy `.env.example` to `.env` if you do not have one, and set a unique `HALFSWORD_WINDOWS_PASSWORD`:
    ```bash
    cd halfsword-steam-container
    docker compose up -d
@@ -93,7 +93,7 @@ On this Mac it can boot but will be **painfully slow**.
    ./start.sh
    ```
 
-3. Open browser to http://<linux-ip>:8006 and watch Windows install itself (5-20 minutes).
+3. Open browser to http://localhost:8006 (on the Docker host, or through an SSH tunnel) and watch Windows install itself (5-20 minutes).
 
 4. When desktop appears:
    - There should be `SteamSetup.exe` on the Desktop (downloaded by the install.bat).
@@ -109,16 +109,16 @@ On this Mac it can boot but will be **painfully slow**.
 
 RDP (port 3389):
 - Mac App Store → Microsoft Remote Desktop
-- Add PC: the Linux host IP, port 3389
-- User: Docker   Password: admin
-- (Change the password inside Windows immediately.)
+- Connect to localhost:3389 on the Docker host, or forward the Docker host’s loopback port 3389 through SSH and connect to the local side of that tunnel.
+- User: Docker. Use the Windows password you set in your local `.env`.
+- (If you previously used the old default, change the password inside the existing Windows VM. Editing `.env` is not a password reset.)
 
 ### Trying it locally on your Mac anyway (very slow)
 
-We created a special file for this:
+We created a special file for this. Set `HALFSWORD_WINDOWS_PASSWORD` in your local `.env` first:
 
 ```bash
-cd /Users/ustad/halfsword-steam-container
+cd halfsword-steam-container
 docker compose -f docker-compose.macos-try.yml up -d
 ```
 
@@ -143,13 +143,13 @@ rm -rf windows-macos
 If you have a Linux machine (or are OK with emulation on Mac):
 
 ```bash
-cd /Users/ustad/halfsword-steam-container
+cd halfsword-steam-container
 docker compose -f docker-compose.steam-headless.yml up -d
 ```
 
 - This runs real Linux Steam + Proton (Half Sword works well according to ProtonDB).
-- Built-in Sunshine for streaming.
-- Edit the file first to set your STEAM_USER / SUNSHINE_PASS etc.
+- Built-in Sunshine for streaming. noVNC is loopback-only. For Moonlight from another device, set `SUNSHINE_BIND_IP` to a trusted LAN interface address and restrict access with your firewall.
+- Before starting, copy `.env.example` to `.env` if needed, then set `SUNSHINE_USER` and a unique `SUNSHINE_PASS`. Steam credentials can be entered interactively.
 - On Apple Silicon Mac: image is amd64-only → runs emulated in Docker (poor 3D perf). Use on real amd64 Linux hardware for best results.
 - Much lighter than full Windows for this game.
 

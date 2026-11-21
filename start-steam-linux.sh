@@ -37,14 +37,8 @@ if [ "$HOST_ARCH" = "arm64" ] || [ "$HOST_ARCH" = "aarch64" ]; then
 fi
 
 # Update the compose with detected IDs (simple sed for the env lines)
-cp docker-compose.steam-headless.yml docker-compose.steam-headless.yml.bak 2>/dev/null || true
 sed -i '' "s/- PUID=[0-9]*/- PUID=$PUID/" docker-compose.steam-headless.yml
 sed -i '' "s/- PGID=[0-9]*/- PGID=$PGID/" docker-compose.steam-headless.yml
-
-# Set a default Sunshine password if not changed (user should change it)
-if grep -q "SUNSHINE_PASS=changeme123" docker-compose.steam-headless.yml || grep -q "SUNSHINE_PASS=halfsword123" docker-compose.steam-headless.yml; then
-  echo "Warning: Using default Sunshine password. Edit docker-compose.steam-headless.yml to set a secure one (SUNSHINE_PASS=yourpassword)."
-fi
 
 echo "Pulling image via docker compose (respects platform: in the yml; may need 'docker login ghcr.io' for GHCR rate limits)..."
 

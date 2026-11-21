@@ -62,9 +62,9 @@ This avoids Windows entirely, uses native Linux gaming stack, and is 100% free/o
 We have `docker-compose.steam-headless.yml` in this folder.
 - This runs a Linux container with Steam + Proton + Sunshine (for streaming the game back to your Mac if desired).
 - Requires Docker Desktop running.
-- Edit the file for your PUID/PGID and passwords.
+- Copy `.env.example` to `.env` if needed; set `SUNSHINE_USER` and a unique `SUNSHINE_PASS`. Adjust PUID/PGID for your host if needed.
 - Then: `docker compose -f docker-compose.steam-headless.yml up -d`
-- Access via web UI or Moonlight client.
+- Access the web UI on the host at localhost:8080. For Moonlight over a trusted LAN, set `SUNSHINE_BIND_IP` to the host LAN address and restrict access with your firewall.
 - **Caveat for macOS/Apple Silicon**: The upstream image is amd64-only, so it runs emulated (Rosetta) in Docker. GPU/3D performance for games will be very limited. The UTM native Linux VM path is strongly preferred on Mac.
 
 Run the helper for status:
